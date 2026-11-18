@@ -1025,15 +1025,15 @@ function aiPlay(){
   if(un.length){const mx=near.reduce((a,u)=>a+u.x,0)/near.length;play(un.slice().sort((a,b)=>CARDS[b].hp-CARDS[a].hp)[0],Math.max(80,Math.min(280,mx)),150);return}
  }
  // 0a) İksir doluysa (9+) en pahalı uygun kartı oyna
- if(B.eel>=9){const ar=affAny.filter(id=>id!==B.lastAi);const src=ar.length?ar:affAny;const sp0=src.filter(x=>!CARDS[x].fl.includes('s'));const pool0=ours.length||!sp0.length?src:sp0;const id=pool0.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];if(CARDS[id].fl.includes('s')){if(!ours.length)return;const t=ours[Math.floor(Math.random()*ours.length)];play(id,t.x,t.y);return}const L=ours.filter(u=>u.x<180).length,R=ours.length-L;play(id,L<=R?90:270,130);return}
+ if(B.eel>=9){const ar=affAny.filter(id=>id!==B.lastAi&&!(B.rec||[]).includes(id));const src=ar.length?ar:affAny;const sp0=src.filter(x=>!CARDS[x].fl.includes('s'));const pool0=ours.length||!sp0.length?src:sp0;const id=pool0.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];if(CARDS[id].fl.includes('s')){if(!ours.length)return;const t=ours[Math.floor(Math.random()*ours.length)];play(id,t.x,t.y);return}const L=ours.filter(u=>u.x<180).length,R=ours.length-L;play(id,L<=R?90:270,130);return}
  // 0) Zorunlu: 9 sn'dir oynamadıysa en uygun kartı hemen oyna (uzun bekleme yok)
- if(idle>=9){const ar=affAny.filter(id=>id!==B.lastAi);const src=ar.length?ar:affAny;const sp0=src.filter(x=>!CARDS[x].fl.includes('s'));const pool0=ours.length||!sp0.length?src:sp0;const id=pool0.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];if(CARDS[id].fl.includes('s')){if(!ours.length)return;const t=ours[Math.floor(Math.random()*ours.length)];play(id,t.x,t.y);return}const L=ours.filter(u=>u.x<180).length,R=ours.length-L;play(id,L<=R?90:270,130);return}
+ if(idle>=9){const ar=affAny.filter(id=>id!==B.lastAi&&!(B.rec||[]).includes(id));const src=ar.length?ar:affAny;const sp0=src.filter(x=>!CARDS[x].fl.includes('s'));const pool0=ours.length||!sp0.length?src:sp0;const id=pool0.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];if(CARDS[id].fl.includes('s')){if(!ours.length)return;const t=ours[Math.floor(Math.random()*ours.length)];play(id,t.x,t.y);return}const L=ours.filter(u=>u.x<180).length,R=ours.length-L;play(id,L<=R?90:270,130);return}
  // 3) Plan: büyük kart için en fazla ~6 sn biriktir, yoksa uygun en pahalı kartı oyna
- if(!B.plan||B.planDone){const cand=deck.filter(id=>CARDS[id].c<=B.eel+3);const pl=cand.length?cand:[deck.slice().sort((a,b)=>CARDS[a].c-CARDS[b].c)[0]];const top=cand.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];B.plan=(cand.length&&top!==undefined&&Math.random()<.5)?top:pl[Math.floor(Math.random()*pl.length)];B.planDone=false;B.planT=now}
+ if(!B.plan||B.planDone){const cand0=deck.filter(id=>CARDS[id].c<=B.eel+3);const cand=cand0.some(id=>!(B.rec||[]).includes(id))?cand0.filter(id=>!(B.rec||[]).includes(id)):cand0;const pl=cand.length?cand:[deck.slice().sort((a,b)=>CARDS[a].c-CARDS[b].c)[0]];const top=cand.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0];B.plan=(cand.length&&top!==undefined&&Math.random()<.2)?top:pl[Math.floor(Math.random()*pl.length)];B.planDone=false;B.planT=now}
  const canPlan=CARDS[B.plan].c<=B.eel;
  const wl=CARDS[B.plan].c>=8?8:6;if(!canPlan&&now-B.planT<wl&&B.eel<9&&idle<9)return;
  let pid=canPlan?B.plan:null;
- if(pid===null){const ar=affAny.filter(id=>id!==B.lastAi);const src=ar.length?ar:affAny;pid=src.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0]}
+ if(pid===null){const ar=affAny.filter(id=>id!==B.lastAi&&!(B.rec||[]).includes(id));const src=ar.length?ar:affAny;pid=src.slice().sort((a,b)=>CARDS[b].c-CARDS[a].c)[0]}
  B.planDone=true;
  if(CARDS[pid].fl.includes('s')){if(!ours.length)return;const t=ours[Math.floor(Math.random()*ours.length)];play(pid,t.x,t.y);return}
  const L=ours.filter(u=>u.x<180).length,R=ours.length-L;
@@ -1173,5 +1173,13 @@ function hintToast(t){try{const d=document.createElement('div');d.textContent=t;
 {const _col3=collect;collect=function(i){_col3(i);if(Math.random()<0.05){const n=secDrop();if(n){const mb=$('#mb');if(mb)mb.innerHTML+='<p style="color:#c8f">🌟 Gizli kart açıldı: '+n.replace('Gizli: ','')+'</p>'}}}}
 {const _eb11=endBattle;endBattle=function(){if(!B||B.ended)return _eb11();_eb11();if(Math.random()<0.03){const n=secDrop();if(n){const mb=$('#mb');if(mb)mb.innerHTML+='<p style="color:#c8f">🌟 Savaşta gizli kart buldun: '+n.replace('Gizli: ','')+'</p>'}}}}
 
+
+// ---- v33: bot aynı kartı üst üste atmasın (son 2 kart hariç), pahalı kart seçimi azaltıldı ----
+{const _ov13=overlay;overlay=function(){_ov13();if(B&&B.lastAi!==undefined&&B.lastAi!==B._seenAi){B._seenAi=B.lastAi;B.rec=[B.lastAi].concat((B.rec||[]).filter(x=>x!==B.lastAi)).slice(0,2)}}}
+
+// ---- v34: hazır modellerin altındaki siyah yer kaldırıldı (alt yüzeyler ve gölge kapatıldı) ----
+const ASSET_GEO2={};
+function assetGeo(name){if(ASSET_GEO2[name])return ASSET_GEO2[name];const a=MODEL_ASSETS[name];const pb=b64u8(a.p),cb=b64u8(a.c),ib=b64u8(a.i);const P=new Float32Array(pb.buffer);const I=a.it==='u16'?new Uint16Array(ib.buffer):new Uint32Array(ib.buffer);const keep=[];for(let i=0;i<I.length;i+=3){let ok=true;for(let k=0;k<3;k++){if(P[I[i+k]*3+1]<0.6){ok=false;break}}if(ok)keep.push(I[i],I[i+1],I[i+2])}const col=new Float32Array(cb.length);for(let i=0;i<cb.length;i++)col[i]=cb[i]/255;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(new THREE.BufferAttribute(new Uint32Array(keep),1));g.computeVertexNormals();return ASSET_GEO2[name]=g}
+function addShadow(G,c,ev){if(G&&G.userData&&G.userData.asset)return;if(typeof THREE.CircleGeometry!=='function'||typeof THREE.CanvasTexture!=='function')return;if(/wing|balloon/.test((c&&c.acc)||''))return;const r=11*((c&&c.sc)||1)*(ev?1.12:1);const m=new THREE.Mesh(new THREE.CircleGeometry(r,24),new THREE.MeshBasicMaterial({map:shadowTex(),transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=0.15;G.add(m)}
 R();
 </script></body></html>
