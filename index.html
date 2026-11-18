@@ -1181,5 +1181,13 @@ function hintToast(t){try{const d=document.createElement('div');d.textContent=t;
 const ASSET_GEO2={};
 function assetGeo(name){if(ASSET_GEO2[name])return ASSET_GEO2[name];const a=MODEL_ASSETS[name];const pb=b64u8(a.p),cb=b64u8(a.c),ib=b64u8(a.i);const P=new Float32Array(pb.buffer);const I=a.it==='u16'?new Uint16Array(ib.buffer):new Uint32Array(ib.buffer);const keep=[];for(let i=0;i<I.length;i+=3){let ok=true;for(let k=0;k<3;k++){if(P[I[i+k]*3+1]<0.6){ok=false;break}}if(ok)keep.push(I[i],I[i+1],I[i+2])}const col=new Float32Array(cb.length);for(let i=0;i<cb.length;i++)col[i]=cb[i]/255;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(new THREE.BufferAttribute(new Uint32Array(keep),1));g.computeVertexNormals();return ASSET_GEO2[name]=g}
 function addShadow(G,c,ev){if(G&&G.userData&&G.userData.asset)return;if(typeof THREE.CircleGeometry!=='function'||typeof THREE.CanvasTexture!=='function')return;if(/wing|balloon/.test((c&&c.acc)||''))return;const r=11*((c&&c.sc)||1)*(ev?1.12:1);const m=new THREE.Mesh(new THREE.CircleGeometry(r,24),new THREE.MeshBasicMaterial({map:shadowTex(),transparent:true,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.y=0.15;G.add(m)}
+
+// ---- v35: can çalma yeteneği kaldırıldı ----
+CARDS.forEach(c=>{if(c.ab==='steal')c.ab=undefined});
+
+// ---- v36: hazır modeller kuleden kısa, Mega Şövalye tam seviye + 1. evrimde 565 ----
+const ASSET_K={'Mega Şövalye':0.6,'PEKKA':0.64};
+function assetModel(name,c,team,ev){ensureToon();const G=new THREE.Group(),R=new THREE.Group();G.add(R);R.scale.setScalar(c.sc*(ev?1.12:1)*(ev>1?1.1:1)*(ASSET_K[name]||1));G.userData={l:new THREE.Group(),r:new THREE.Group(),w:[],asset:true};const geo=assetGeo(name);R.add(new THREE.Mesh(geo,new THREE.MeshToonMaterial({vertexColors:true,gradientMap:CL_TOON,side:THREE.DoubleSide})));const ol=new THREE.Mesh(assetOutGeo(name),CL_OUT);ol.scale.setScalar(1.03);R.add(ol);add(R,cy(10,10,1.2,16),ev?0xffc933:(team?0xd23c3c:0x3c6fe0),0,.6,0,ev?0x664400:0);return G}
+CARDS.forEach(c=>{if(c.n==='Mega Şövalye')c.dm=272});
 R();
 </script></body></html>
