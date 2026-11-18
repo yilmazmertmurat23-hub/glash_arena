@@ -1189,5 +1189,10 @@ CARDS.forEach(c=>{if(c.ab==='steal')c.ab=undefined});
 const ASSET_K={'Mega Şövalye':0.6,'PEKKA':0.64};
 function assetModel(name,c,team,ev){ensureToon();const G=new THREE.Group(),R=new THREE.Group();G.add(R);R.scale.setScalar(c.sc*(ev?1.12:1)*(ev>1?1.1:1)*(ASSET_K[name]||1));G.userData={l:new THREE.Group(),r:new THREE.Group(),w:[],asset:true};const geo=assetGeo(name);R.add(new THREE.Mesh(geo,new THREE.MeshToonMaterial({vertexColors:true,gradientMap:CL_TOON,side:THREE.DoubleSide})));const ol=new THREE.Mesh(assetOutGeo(name),CL_OUT);ol.scale.setScalar(1.03);R.add(ol);add(R,cy(10,10,1.2,16),ev?0xffc933:(team?0xd23c3c:0x3c6fe0),0,.6,0,ev?0x664400:0);return G}
 CARDS.forEach(c=>{if(c.n==='Mega Şövalye')c.dm=272});
+
+// ---- v37: hero kartları da yüklenen modelleri kullanıyor (normal kartın %8 büyüğü, kuleden kısa) ----
+const HERO_MODEL={'Kahraman Mega Şövalye':'Mega Şövalye','Kahraman PEKKA':'PEKKA','Kahraman Prens':'Prens'};
+function heroScale(base){const b=CARDS.find(x=>x.n===base);return (b?b.sc:1)*1.08}
+{const _m3=model;model=function(c,team,ev){const base=c&&HERO_MODEL[c.n];if(base&&MODEL_ASSETS[base]){try{return assetModel(base,Object.assign({},c,{sc:heroScale(base)}),team,ev)}catch(e){}}return _m3(c,team,ev)}}
 R();
 </script></body></html>
